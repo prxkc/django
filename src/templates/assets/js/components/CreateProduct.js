@@ -75,10 +75,57 @@ const CreateProduct = (props) => {
     }
 
     // Save product
-    let saveProduct = (event) => {
-        event.preventDefault();
-        // TODO : write your code here to save the product
-    }
+    const saveProduct = async (event) => {
+        //event.preventDefault();
+
+        // Gather data from the form fields
+        const productName = document.querySelectorAll(".form-control")[0].value;
+        const productSKU = document.querySelectorAll(".form-control")[1].value;
+        const productDescription = document.querySelectorAll(".form-control")[2].value;
+        const productMedia = []; // TODO: Add logic to handle media files
+
+        // Prepare variant data
+        const productVariantsData = productVariantPrices.map((variant) => ({
+            title: variant.title,
+            price: parseFloat(variant.price),
+            stock: parseInt(variant.stock),
+        }));
+
+        // Prepare the payload to send to the backend
+        const payload = {
+            title: productName,
+            sku: productSKU,
+            description: productDescription,
+            media: productMedia,
+            variants: productVariantsData,
+        };
+    
+        try {
+            // Send data to the backend using fetch (POST request to create a new product)
+            const response = await fetch('/api/products/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+    
+            if (!response.ok) {
+                // Handle the error response from the server if needed
+                throw new Error('Failed to save the product.');
+            }
+    
+            // If the product was successfully saved, you can provide feedback to the user
+            alert('Product saved successfully!');
+            // TODO: Optionally, you can redirect the user to a different page or take other actions after saving.
+    
+        } catch (error) {
+            // Handle any errors that occurred during the process
+            console.error('Error saving the product:', error);
+            alert('Failed to save the product. Please try again later.');
+        }
+    };
+
 
 
     return (
